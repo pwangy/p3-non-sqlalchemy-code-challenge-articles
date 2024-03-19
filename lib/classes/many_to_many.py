@@ -1,8 +1,11 @@
 class Article:
+    all = []
+    
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
         self.title = title
+        type(self).all.append(self)
 
     @property
     def title(self):
@@ -19,8 +22,31 @@ class Article:
         else:
             self._title = title
 
+    @property
+    def author(self):
+        return self._author
+
+    @author.setter
+    def author(self, author):
+        if not isinstance(author, Author):
+            raise TypeError(f'author must be Author.')
+        else:
+            self._author = author
+
+    @property
+    def magazine(self):
+        return self._magazine
+
+    @magazine.setter
+    def magazine(self, magazine):
+        if not isinstance(magazine, Magazine):
+            raise TypeError(f'magazine must be Magazine.')
+        else:
+            self._magazine = magazine
+
 
 class Author:
+    
     def __init__(self, name):
         self.name = name
         
@@ -40,16 +66,19 @@ class Author:
             self._name = name
 
     def articles(self):
-        pass
+        return list({article for article in Article.all if article.author is self})
 
     def magazines(self):
-        pass
+        return list({article.magazine for article in Article.all if article.author is self})
 
     def add_article(self, magazine, title):
-        pass
+        return Article(self, magazine, title)
+
+    def topics(self):
+        return list({article.magazine.category for article in Article.all if article.author is self})
 
     def topic_areas(self):
-        pass
+        return list({article.category for article in self.topics()})
 
 
 class Magazine:
@@ -84,10 +113,10 @@ class Magazine:
             self._category = category
 
     def articles(self):
-        pass
+        return list({article for article in Article.all if article.magazine is self})
 
     def contributors(self):
-        pass
+        return list({article.author for article in Article.all if article.magazine is self})
 
     def article_titles(self):
         pass
@@ -95,36 +124,6 @@ class Magazine:
     def contributing_authors(self):
         pass
 
-# ### Object Relationship Methods and Properties
-# #### Article
-
-# - `Article property author`
-#   - Returns the author object for that article
-#   - Must be of type `Author`
-#   - Authors **can be changed** after the article object is initialized
-# - `Article property magazine`
-#   - Returns the magazine object for that article
-#   - Must be of type `Magazine`
-#   - Magazines **can be changed** after the article object is initialized
-
-# #### Author
-
-# - `Author articles()`
-#   - Returns a list of all the articles the author has written
-#   - Must be of type `Article`
-# - `Author magazines()`
-#   - Returns a **unique** list of magazines for which the author has contributed
-#     to
-#   - Must be of type `Magazine`
-
-# #### Magazine
-
-# - `Magazine articles()`
-#   - Returns a list of all the articles the magazine has published
-#   - Must be of type `Article`
-# - `Magazine contributors()`
-#   - Returns a **unique** list of authors who have written for this magazine
-#   - Must be of type `Author`
 
 # ### Aggregate and Association Methods
 
@@ -182,18 +181,12 @@ class Magazine:
 #   - **magazine_test.py**
 #     - lines 35-36, 55-56, 59-60, 90-91, and 105-106
 
-
-
-
-## Topics
-# Classes and Instances
-# Class and Instance Methods
-# Variable Scope
-# Object Relationships
-# lists and list Methods
-
-
 # Writing error-free code is more important than completing all of the deliverables listed - prioritize writing methods that work over writing more methods that don't work. You should test your code in the console as you write.
 
 # Similarly, messy code that works is better than clean code that doesn't. First, prioritize getting things working. Then, if there is time at the end, refactor your code to adhere to best practices. When you encounter duplicated logic, extract it into a shared helper method.
 
+author_1 = Author("Isobella Blow")
+author_2 = Author("Nathaniel Hawthorne")
+magazine_1 = Magazine("Vogue", "Fashion")
+Article(author_1, magazine_1, "How to wear a hat with style")
+Article(author_2, magazine_1, "Miss Lonely Hearts")
