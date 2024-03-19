@@ -3,19 +3,41 @@ class Article:
         self.author = author
         self.magazine = magazine
         self.title = title
-# - `Article __init__(self, author, magazine, title)`
-#   - Article is initialized with an `Author` instance, a `Magazine` instance, and
-#     a title.
-# - `Article property title`
-#   - Returns the article's title
-#   - Titles must be of type `str`
-#   - Titles must be between 5 and 50 characters, inclusive
-#   - Should **not be able** to change after the article is instantiated.
-#   - _hint: hasattr()_
-        
+
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        if not isinstance(title, str):
+            raise TypeError(f'Title must be a string.')
+        elif not 5 <= len(title) <= 50:
+            raise ValueError(f'Title must be between 5 and 50 characters long.')
+        elif hasattr(self, "title"):
+            raise AttributeError(f'Titles cannot be changed!')
+        else:
+            self._title = title
+
+
 class Author:
     def __init__(self, name):
         self.name = name
+        
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise TypeError(f'Name must be a string.')
+        elif not len(name) > 0:
+            raise ValueError(f'Name cannot be empty.')
+        elif hasattr(self, "name"):
+            raise AttributeError(f'Names cannot be changed.')
+        else:
+            self._name = name
 
     def articles(self):
         pass
@@ -28,36 +50,38 @@ class Author:
 
     def topic_areas(self):
         pass
-    
-# #### Author
 
-# - `Author __init__(self, name)`
-#   - Author is initialized with a name
-# - `Author property name`
-#   - Returns the author's name
-#   - Names must be of type `str`
-#   - Names must be longer than 0 characters
-#   - Should **not be able** to change after the author is instantiated.
-#   - _hint: hasattr()_
 
 class Magazine:
     def __init__(self, name, category):
         self.name = name
         self.category = category
-        
-        # - `Magazine __init__(self, name, category)`
-#   - A magazine is initialized with a name and a category
-# - `Magazine property name`
-#   - Returns the magazine's name
-#   - Names must be of type `str`
-#   - Names must be between 2 and 16 characters, inclusive
-#   - Should **be able** to change after the magazine is instantiated.
-# - `Magazine property category`
-#   - Returns the magazine's category
-#   - Categories must be of type `str`
-#   - Categories must be longer than 0 characters
-#   - Should **be able** to change after the magazine is instantiated.
 
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise TypeError(f'Name must be a string.')
+        elif not 2 <= len(name) <= 16:
+            raise ValueError(f'Name must be between 2 and 16 characters long.')
+        else:
+            self._name = name
+
+    @property
+    def category(self):
+        return self._category
+    
+    @category.setter
+    def category(self, category):
+        if not isinstance(category, str):
+            raise TypeError(f'Category must be a string.')
+        elif not len(category) > 0:
+            raise ValueError(f'Name cannot be empty.')
+        else:
+            self._category = category
 
     def articles(self):
         pass
@@ -70,20 +94,6 @@ class Magazine:
 
     def contributing_authors(self):
         pass
-    
-    
-# We have three models: Author, Article, and Magazine.
-
-# For our purposes, an Author has many Articles, a Magazine has many Articles, and Articles belong to both Author and Magazine.
-
-# Author - Magazine is a many to many relationship.
-
-# Note: You should draw your domain on paper or on a whiteboard before you start coding. Remember to identify a single source of truth for your data.
-
-
-# ### Initializers and Properties
-
-
 
 # ### Object Relationship Methods and Properties
 # #### Article
@@ -175,7 +185,7 @@ class Magazine:
 
 
 
-# Topics
+## Topics
 # Classes and Instances
 # Class and Instance Methods
 # Variable Scope
@@ -183,11 +193,7 @@ class Magazine:
 # lists and list Methods
 
 
-
-# We've provided you with a tool that you can use to test your code. To use it, run python lib/debug.py from the command line. This will start a ipdb session with your classes defined. You can test out the methods that you write here. You can add code to the lib/debug.py file to define variables and create sample instances of your objects.
-
 # Writing error-free code is more important than completing all of the deliverables listed - prioritize writing methods that work over writing more methods that don't work. You should test your code in the console as you write.
 
 # Similarly, messy code that works is better than clean code that doesn't. First, prioritize getting things working. Then, if there is time at the end, refactor your code to adhere to best practices. When you encounter duplicated logic, extract it into a shared helper method.
 
-# Before you submit! Save and run your code to verify that it works as you expect. If you have any methods that are not working yet, feel free to leave comments describing your progress.
