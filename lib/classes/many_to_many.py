@@ -1,6 +1,10 @@
+from itertools import count
+from timeit import repeat
+
+
 class Article:
     all = []
-    
+
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
@@ -13,12 +17,12 @@ class Article:
 
     @title.setter
     def title(self, title):
-        if not isinstance(title, str):
+        if hasattr(self, "title"):
+            raise AttributeError(f'Titles cannot be changed!')
+        elif not isinstance(title, str):
             raise TypeError(f'Title must be a string.')
         elif not 5 <= len(title) <= 50:
             raise ValueError(f'Title must be between 5 and 50 characters long.')
-        elif hasattr(self, "title"):
-            raise AttributeError(f'Titles cannot be changed!')
         else:
             self._title = title
 
@@ -46,22 +50,21 @@ class Article:
 
 
 class Author:
-    
     def __init__(self, name):
         self.name = name
-        
+
     @property
     def name(self):
         return self._name
 
     @name.setter
     def name(self, name):
-        if not isinstance(name, str):
+        if hasattr(self, "name"):
+            raise AttributeError(f'Names cannot be changed.')
+        elif not isinstance(name, str):
             raise TypeError(f'Name must be a string.')
         elif not len(name) > 0:
             raise ValueError(f'Name cannot be empty.')
-        elif hasattr(self, "name"):
-            raise AttributeError(f'Names cannot be changed.')
         else:
             self._name = name
 
@@ -74,11 +77,12 @@ class Author:
     def add_article(self, magazine, title):
         return Article(self, magazine, title)
 
-    def topics(self):
-        return list({article.magazine.category for article in Article.all if article.author is self})
-
     def topic_areas(self):
-        return list({article.category for article in self.topics()})
+        topics = list({article.magazine.category for article in Article.all if article.author is self})
+        if len(topics) > 0:
+            return topics
+        else:
+            return None
 
 
 class Magazine:
@@ -89,7 +93,7 @@ class Magazine:
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, name):
         if not isinstance(name, str):
@@ -102,7 +106,7 @@ class Magazine:
     @property
     def category(self):
         return self._category
-    
+
     @category.setter
     def category(self, category):
         if not isinstance(category, str):
@@ -119,67 +123,43 @@ class Magazine:
         return list({article.author for article in Article.all if article.magazine is self})
 
     def article_titles(self):
-        pass
+        every_article_title = list(article.title for article in Article.all if article.magazine is self)
+        if not len(every_article_title) > 0:
+            return None
+        else:
+            return every_article_title
 
     def contributing_authors(self):
-        pass
+        count_author_articles = {}
+        
+        for article in self.articles():
+            author = article.author
+            if author in count_author_articles:
+                count_author_articles[author] += 1
+            else:
+                count_author_articles[author] = 1
 
+        repeat_contributors = [author for author, count in count_author_articles.items() if count > 2]
+
+        if repeat_contributors:
+            return repeat_contributors
+        else:
+            None
 
 # ### Aggregate and Association Methods
 
-# #### Author
-
-# - `Author add_article(magazine, title)`
-#   - Receives a `Magazine` instance, and a title as arguments
-#   - Creates and returns a new `Article` instance and associates it with that
-#     author, the magazine provided
-# - `Author topic_areas()`
-#   - Returns a **unique** list of strings with the categories of the magazines
-#     the author has contributed to
-#   - Returns `None` if the author has no articles
-
-# #### Magazine
-
-# - `Magazine article_titles()`
-#   - Returns a list of the titles strings of all articles written for that
-#     magazine
-#   - Returns `None` if the magazine has no articles
-# - `Magazine contributing_authors()`
-#   - Returns a list of authors who have written more than 2 articles for the
-#     magazine
-#   - Authors must be of type `Author`
-#   - Returns `None` if the magazine has no authors with more than 2 publications
 
 # ### Advanced Deliverables
-
 # These deliverables are not required to pass the code challenge, but if you have
 # the extra time, or even after the code challenge, they are a great way to
 # stretch your skills.
 
 # #### Bonus: Aggregate and Association Method
-
 # - `Magazine classmethod top_publisher()`
 #   - Returns the `Magazine` instance with the most articles
 #   - Returns `None` if there are no articles.
 #   - Uncomment lines 206-224 in the magazine_test file
 #   - _hint: will need a way to remember all magazine objects_
-
-# #### Bonus: For any invalid inputs raise an `Exception`
-
-# - First, **comment out** the following lines
-#   - **article_test.py**
-#     - lines 28-29
-#   - **author_test.py**
-#     - lines 31-32, and 35-36
-#   - **magazine_test.py**
-#     - lines 31-32, 47-48, 51-52, 84-85, and 100-102
-# - Then, **uncomment** the following lines in the test files
-#   - **article_test.py**
-#     - lines 34-35, 46-47, and 50-51
-#   - **author_test.py**
-#     - lines 39-40, and 53-54
-#   - **magazine_test.py**
-#     - lines 35-36, 55-56, 59-60, 90-91, and 105-106
 
 # Writing error-free code is more important than completing all of the deliverables listed - prioritize writing methods that work over writing more methods that don't work. You should test your code in the console as you write.
 
@@ -188,5 +168,9 @@ class Magazine:
 author_1 = Author("Isobella Blow")
 author_2 = Author("Nathaniel Hawthorne")
 magazine_1 = Magazine("Vogue", "Fashion")
+magazine_2 = Magazine("Eye", "Design")
 Article(author_1, magazine_1, "How to wear a hat with style")
 Article(author_2, magazine_1, "Miss Lonely Hearts")
+Article(author_1, magazine_1, "How to wear a tutu with style")
+Article(author_1, magazine_2, "Dating life in NYC")
+Article(author_1, magazine_2, "2023 Eccentric Design Trends")
